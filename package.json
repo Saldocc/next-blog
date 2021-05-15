@@ -11,6 +11,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^1.5.0",
     "ioredis": "^4.27.2",
+    "luxon": "^1.27.0",
     "nanoid": "^3.1.23",
     "next": "^10.0.9",
     "next-mdx": "^0.6.0",
