@@ -5,7 +5,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 function MyApp({ Component, pageProps }) {
   return (
     <Auth0Provider
-      domain="saldoc.eu.auth0.com"
+      domain={process.env.NEXT_PUBLIC_AUTHO_DOMAIN}
       clientId={process.env.NEXT_PUBLIC_AUTHO_CLIENT_ID}
       redirectUri={process.env.NEXT_PUBLIC_URL}
     >

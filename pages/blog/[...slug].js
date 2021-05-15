@@ -1,13 +1,37 @@
+import { useState, useEffect } from 'react'
 import { getMdxNode, getMdxPaths } from 'next-mdx/server'
 import { useHydrate } from 'next-mdx/client'
 import { mdxComponents } from '../../components/mdx-components'
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function PostPage({ post }) {
+  const { loginWithRedirect, logout, isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+  const [text, setText] = useState("")
+  const [url, setUrl] = useState(null)
   const content = useHydrate(post, {
     components: mdxComponents
   })
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+
+  useEffect(() => {
+    const url = window.location.origin + window.location.pathname
+    setUrl(url)
+  }, [])
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    const userToken = await getAccessTokenSilently()
+
+    const response = await fetch("/api/comment", {
+      method: "POST",
+      body: JSON.stringify({ text, userToken, url }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const data = await response.json()
+  }
 
   return (
     <div className="site-container">
@@ -19,16 +43,18 @@ export default function PostPage({ post }) {
         <div className="prose">{content}</div>
       </article>
 
-      <form className="mt-10">
+      <form className="mt-10" onSubmit={onSubmit}>
         <textarea
           rows="2"
           className="border border-gray-300 rounded w-full block px-2 py-1"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
         />
 
         <div className="mt-4">
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
-              <button className="bg-blue-600 text-white px-2 py-1 rounded">
+              <button type="submit" className="bg-blue-600 text-white px-2 py-1 rounded">
                 Send
             </button>
               <img src={user.picture} width={30} className="rounded-full" />
